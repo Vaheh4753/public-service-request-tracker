@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 from models import db, User
 
 app = Flask(__name__)
@@ -11,6 +11,8 @@ with app.app_context():
 
 @app.route('/')
 def home():
+	if 'user_id' not in session:
+            return redirect(url_for('login'))
 	return render_template('index.html')
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -35,6 +37,26 @@ def register():
 
         return redirect(url_for('home'))  # or redirect to login page
     return render_template('register.html')
+
+
+app.secret_key = '0a23b3d7f387290cfcb7485df06b04180482bc1d65ba2902609de12d3dbf9411'
+  # Needed for session management
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+
+        user = User.query.filter_by(email=email).first()
+
+        if user and user.check_password(password):
+            session['user_id'] = user.id
+            return redirect(url_for('home'))  # or dashboard
+        else:
+            return "Invalid email or password"
+
+    return render_template('login.html')
 
 if __name__ == '__main__':
 	app.run(debug=True)
