@@ -1,6 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_migrate import Migrate
-from models import db, User
+from models import db, User, ServiceRequest
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
@@ -15,7 +15,11 @@ with app.app_context():
 def home():
 	if 'user_id' not in session:
             return redirect(url_for('login'))
-	return render_template('index.html')
+        
+	user = User.query.get(session['user_id'])
+	requests = ServiceRequest.query.filter_by(user_id=user.id).order_by(ServiceRequest.timestamp.desc()).all()
+
+	return render_template('index.html', user=user, requests=requests)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -82,8 +86,8 @@ def request_service():
         )
         db.session.add(new_request)
         db.session.commit()
-
-        return redirect(url_for('dashboard'))  # or confirmation page
+        flash('Your request has been submitted successfully!', 'success')
+        return redirect(url_for('home'))  # or confirmation page
 
     return render_template('request.html')
 
