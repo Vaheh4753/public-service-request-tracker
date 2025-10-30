@@ -22,6 +22,7 @@ class ServiceRequest(db.Model):
     category = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    status = db.Column(db.String(20), default='Pending')
 
     user = db.relationship('User', backref=db.backref('requests', lazy=True))
 

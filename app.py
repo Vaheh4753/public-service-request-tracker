@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
 from models import db, User, ServiceRequest
 
 app = Flask(__name__)
@@ -15,8 +16,12 @@ with app.app_context():
 def home():
 	if 'user_id' not in session:
             return redirect(url_for('login'))
-        
 	user = User.query.get(session['user_id'])
+
+	if user is None:
+	    session.clear()
+	    flash("Session expired. Please log in again.", "warning")
+	    return redirect(url_for('login'))        
 	requests = ServiceRequest.query.filter_by(user_id=user.id).order_by(ServiceRequest.timestamp.desc()).all()
 
 	return render_template('index.html', user=user, requests=requests)

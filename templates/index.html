@@ -13,6 +13,7 @@
             <strong>{{ req.category }}</strong><br>
             {{ req.description }}<br>
             <small>Submitted on {{ req.timestamp.strftime('%Y-%m-%d %H:%M') }}</small>
+	    <small>Status: {{ req.status  }}</small>
         </li>
     {% else %}
         <li class="list-group-item">No requests submitted yet.</li>
