@@ -1,10 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for, session
+from flask_migrate import Migrate
 from models import db, User
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
+migrate = Migrate(app, db)
 
 with app.app_context():
     db.create_all()
@@ -57,6 +59,33 @@ def login():
             return "Invalid email or password"
 
     return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
+
+@app.route('/request', methods=['GET', 'POST'])
+def request_service():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        category = request.form['category']
+        description = request.form['description']
+        user_id = session['user_id']
+
+        new_request = ServiceRequest(
+            user_id=user_id,
+            category=category,
+            description=description
+        )
+        db.session.add(new_request)
+        db.session.commit()
+
+        return redirect(url_for('dashboard'))  # or confirmation page
+
+    return render_template('request.html')
 
 if __name__ == '__main__':
 	app.run(debug=True)

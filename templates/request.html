@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Submit Service Request</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container mt-5">
+    <h2 class="mb-4">Submit a Service Request</h2>
+
+    <form method="POST" action="/request">
+        <div class="mb-3">
+            <label for="category" class="form-label">Category</label>
+            <select id="category" name="category" class="form-select" required>
+		<option value="" disabled selected>Select a category</option>
+ 		<option value="Road Repair">Road Repair</option>
+   		<option value="Street Lighting">Street Lighting</option>
+   		<option value="Trash Pickup">Trash Pickup</option>
+   		<option value="Graffiti Removal">Graffiti Removal</option>
+  		<option value="Water Leak">Water Leak</option>
+	    </select>	
+	</div>
+
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea id="description" name="description" class="form-control" rows="4" required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit Request</button>
+    </form>
+</body>
+</html>
